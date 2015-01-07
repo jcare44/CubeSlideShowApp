@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.opengles.cubeslideshowapp;
+package com.epsi.CubeSlideShow.opengl;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.epsi.CubeSlideShow.opengl.MyGLSurfaceView;
-
-public class MyActivity extends Activity {
+public class OpenGLES20Activity extends Activity {
 
     private GLSurfaceView mGLView;
 
@@ -34,7 +31,6 @@ public class MyActivity extends Activity {
         // as the ContentView for this Activity
         mGLView = new MyGLSurfaceView(this);
         setContentView(mGLView);
-        Log.d("sdf","MyActivity");
     }
 
     @Override
