@@ -15,12 +15,12 @@
  */
 package com.epsi.CubeSlideShow.opengl;
 
-import android.opengl.GLES20;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+
+import android.opengl.GLES20;
 
 /**
  * A two-dimensional square for use as a drawn object in OpenGL ES 2.0.
@@ -31,20 +31,20 @@ public class Square {
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shader
             "uniform mat4 uMVPMatrix;" +
-            "attribute vec4 vPosition;" +
-            "void main() {" +
-            // The matrix must be included as a modifier of gl_Position.
-            // Note that the uMVPMatrix factor *must be first* in order
-            // for the matrix multiplication product to be correct.
-            "  gl_Position = uMVPMatrix * vPosition;" +
-            "}";
+                    "attribute vec4 vPosition;" +
+                    "void main() {" +
+                    // The matrix must be included as a modifier of gl_Position.
+                    // Note that the uMVPMatrix factor *must be first* in order
+                    // for the matrix multiplication product to be correct.
+                    "  gl_Position = uMVPMatrix * vPosition;" +
+                    "}";
 
     private final String fragmentShaderCode =
             "precision mediump float;" +
-            "uniform vec4 vColor;" +
-            "void main() {" +
-            "  gl_FragColor = vColor;" +
-            "}";
+                    "uniform vec4 vColor;" +
+                    "void main() {" +
+                    "  gl_FragColor = vColor;" +
+                    "}";
 
     private final FloatBuffer vertexBuffer;
     private final ShortBuffer drawListBuffer;
@@ -56,12 +56,31 @@ public class Square {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float squareCoords[] = {
+            0.5f,  0.5f, 0.0f,   // top right
             -0.5f,  0.5f, 0.0f,   // top left
             -0.5f, -0.5f, 0.0f,   // bottom left
-             0.5f, -0.5f, 0.0f,   // bottom right
-             0.5f,  0.5f, 0.0f }; // top right
+            0.5f, -0.5f, 0.0f,   // bottom right
+            // right face
+            -0.5f,  0.5f, 1.0f,   // top right
+            -0.5f,  0.5f, 0.0f,   // top left
+            -0.5f, -0.5f, 0.0f,   // bottom left
+            -0.5f, -0.5f, 1.0f,   // bottom right
+            // back face
+            0.5f, -0.5f, 1.0f,   // bottom right
+            -0.5f, -0.5f, 1.0f,   // bottom left
+            -0.5f,  0.5f, 1.0f,   // top left
+            0.5f,  0.5f, 1.0f,   // top right
+            // left face
+            0.5f, -0.5f, 1.0f,   // bottom right
+            0.5f, -0.5f, 0.0f,   // bottom left
+            0.5f,  0.5f, 0.0f,   // top left
+            0.5f,  0.5f, 1.0f,   // top right
+    };
 
-    private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
+    private final short drawOrder[] = { 0, 1, 2, 0, 2, 3,
+            4, 5, 6, 4, 6, 7,
+            8, 9, 10, 8, 10, 11,
+            12, 13, 14, 12, 14, 15}; // order to draw vertices
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
