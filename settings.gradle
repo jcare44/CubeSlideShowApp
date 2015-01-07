@@ -1,1 +1,1 @@
-include ':app', ':CubeSlideShow'
+include ':app', ':CubeSlideShowLibrary'

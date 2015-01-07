@@ -5,7 +5,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.epsi.CubeSlideShow"
+        applicationId "com.epsi.CubeSlideShowLibrary"
         minSdkVersion 14
         targetSdkVersion 14
         versionCode 1
