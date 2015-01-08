@@ -56,26 +56,61 @@ public class Square {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float squareCoords[] = {
-            0.5f,  0.5f, -0.5f,   // top right
-            -0.5f,  0.5f, -0.5f,   // top left
-            -0.5f, -0.5f, -0.5f,   // bottom left
-            0.5f, -0.5f, -0.5f,   // bottom right
+            1.0f,  1.0f, -1.0f,   // top right
+            -1.0f,  1.0f, -1.0f,   // top left
+            -1.0f, -1.0f, -1.0f,   // bottom left
+            1.0f, -1.0f, -1.0f,   // bottom right
             // right face
-            -0.5f,  0.5f, 0.5f,   // top right
-            -0.5f,  0.5f, -0.5f,   // top left
-            -0.5f, -0.5f, -0.5f,   // bottom left
-            -0.5f, -0.5f, 0.5f,   // bottom right
+            -1.0f,  1.0f, 1.0f,   // top right
+            -1.0f,  1.0f, -1.0f,   // top left
+            -1.0f, -1.0f, -1.0f,   // bottom left
+            -1.0f, -1.0f, 1.0f,   // bottom right
             // back face
-            0.5f, -0.5f, 0.5f,   // bottom right
-            -0.5f, -0.5f, 0.5f,   // bottom left
-            -0.5f,  0.5f, 0.5f,   // top left
-            0.5f,  0.5f, 0.5f,   // top right
+            1.0f, -1.0f, 1.0f,   // bottom right
+            -1.0f, -1.0f, 1.0f,   // bottom left
+            -1.0f,  1.0f, 1.0f,   // top left
+            1.0f,  1.0f, 1.0f,   // top right
             // left face
-            0.5f, -0.5f, 0.5f,   // bottom right
-            0.5f, -0.5f, -0.5f,   // bottom left
-            0.5f,  0.5f, -0.5f,   // top left
-            0.5f,  0.5f, 0.5f,   // top right
+            1.0f, -1.0f, 1.0f,   // bottom right
+            1.0f, -1.0f, -1.0f,   // bottom left
+            1.0f,  1.0f, -1.0f,   // top left
+            1.0f,  1.0f, 1.0f,   // top right
     };
+
+    static float[] cubeTextureCoordinateData =
+            {
+                    // Front face
+                    0.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 1.0f,
+                    1.0f, 0.0f,
+
+                    // Right face
+                    0.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 1.0f,
+                    1.0f, 0.0f,
+
+                    // Back face
+                    0.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 1.0f,
+                    1.0f, 0.0f,
+
+                    // Left face
+                    0.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    1.0f, 1.0f,
+                    1.0f, 0.0f,
+            };
 
     private final short drawOrder[] = { 0, 1, 2, 0, 2, 3,
             4, 5, 6, 4, 6, 7,
