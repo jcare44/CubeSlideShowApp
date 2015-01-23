@@ -15,8 +15,13 @@
  */
 package com.epsi.CubeSlideShow.opengl;
 
+import android.app.Application;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -34,9 +39,15 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
+    private Context context;
+
     private static final String TAG = "MyGLRenderer";
     private Triangle mTriangle;
     private Square   mSquare;
+    private int refWidth = 720/2;
+    private int width = 0;
+    private float ratio = 1;
+    private float ratio2 = 1;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
@@ -45,6 +56,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mRotationMatrix = new float[16];
 
     private float mAngle;
+
+    /** This will be used to pass in the texture. */
+    private int mTextureUniformHandle;
+
+    /** Size of the color data in elements. */
+    private final int mColorDataSize = 4;
+
+    /** Size of the normal data in elements. */
+    private final int mNormalDataSize = 3;
+
+    /** Size of the texture coordinate data in elements. */
+    private final int mTextureCoordinateDataSize = 2;
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -59,15 +82,32 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 unused) {
         float[] scratch = new float[16];
+        float[] tmp = new float[16];
 
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, -2, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Log.d("angle","angle : "+mAngle);
+        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 1.0f, 0.0f);
 
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(tmp, 0, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+
+
+        Matrix.multiplyMM(mViewMatrix, 0, tmp, 0, mRotationMatrix, 0);
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+
+        if(this.width != 0) {
+            float scale = ((float)this.width/context.getResources().getDisplayMetrics().density)/this.refWidth;
+            Log.d("opengles","scale : "+scale+" - dpi : "+ context.getResources().getDisplayMetrics().density);
+            Matrix.scaleM(mMVPMatrix, 0, scale, scale, scale);
+        }
+
+        if(this.ratio != 1) {
+            Log.d("sdf renderer scale ratio",""+1/this.ratio);
+            Matrix.scaleM(mMVPMatrix, 0, 1, 1/this.ratio, 1);
+        }
 
         // Draw square
         mSquare.draw(mMVPMatrix);
@@ -79,15 +119,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // long time = SystemClock.uptimeMillis() % 4000L;
         // float angle = 0.090f * ((int) time);
 
-        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
+        //Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
 
         // Combine the rotation matrix with the projection and camera view
         // Note that the mMVPMatrix factor *must be first* in order
         // for the matrix multiplication product to be correct.
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
+        //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
 
         // Draw triangle
-        mTriangle.draw(scratch);
+       // mTriangle.draw(scratch);
     }
 
     @Override
@@ -95,12 +135,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Adjust the viewport based on geometry changes,
         // such as screen rotation
         GLES20.glViewport(0, 0, width, height);
-
-        float ratio = (float) width / height;
+        Log.d("width","width : "+width+" - dpi : "+ context.getResources().getDisplayMetrics().density);
+        this.width = width;
+        this.ratio = (float) width / height;
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
-        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+        Matrix.frustumM(mProjectionMatrix, 0, -this.ratio, this.ratio, -1, 1, 3, 7);
 
     }
 
@@ -160,7 +201,50 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      * Sets the rotation angle of the triangle shape (mTriangle).
      */
     public void setAngle(float angle) {
-        mAngle = angle;
+        mAngle = angle%360;
     }
 
+    public void comeBack() {
+        mAngle = Math.round(mAngle/90)*90;
+    }
+
+    public MyGLRenderer(Context context){
+        this.context = context;
+    }
+
+    public static int loadTexture(final Context context, final int resourceId)
+    {
+        final int[] textureHandle = new int[1];
+
+        GLES20.glGenTextures(1, textureHandle, 0);
+
+        if (textureHandle[0] != 0)
+        {
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inScaled = false;   // No pre-scaling
+
+            // Read in the resource
+            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
+
+            // Bind to the texture in OpenGL
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+            // Set filtering
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+            // Load the bitmap into the bound texture.
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+            // Recycle the bitmap, since its data has been loaded into OpenGL.
+            bitmap.recycle();
+        }
+
+        if (textureHandle[0] == 0)
+        {
+            throw new RuntimeException("Error loading texture.");
+        }
+
+        return textureHandle[0];
+    }
 }
