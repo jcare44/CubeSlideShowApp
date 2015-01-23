@@ -78,6 +78,9 @@ public class MyGLSurfaceView extends GLSurfaceView {
                     if(this.onTouchListener != null) {
                         this.onTouchListener.onTouch();
                     }
+                } else {
+                    mRenderer.comeBack();
+                    requestRender();
                 }
                 break;
         }

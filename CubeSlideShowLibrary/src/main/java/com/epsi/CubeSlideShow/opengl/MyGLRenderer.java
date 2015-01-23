@@ -91,7 +91,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 1.0f, 0.0f);
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(tmp, 0, -2, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(tmp, 0, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
 
         Matrix.multiplyMM(mViewMatrix, 0, tmp, 0, mRotationMatrix, 0);
@@ -201,7 +201,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      * Sets the rotation angle of the triangle shape (mTriangle).
      */
     public void setAngle(float angle) {
-        mAngle = angle;
+        mAngle = angle%360;
+    }
+
+    public void comeBack() {
+        mAngle = Math.round(mAngle/90)*90;
     }
 
     public MyGLRenderer(Context context){
